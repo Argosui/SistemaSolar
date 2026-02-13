@@ -4,7 +4,7 @@ import * as THREE from "three";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const textoInicio = document.getElementById("overlay-container")
+const textoInicio = document.querySelector(".overlay-container")
 const contenedor = document.getElementById("scene-container");
 const scene = new THREE.Scene();
 
@@ -97,7 +97,7 @@ function createPlanet({ size, texture, distance }) {
   const orbitLine = createOrbit(distance);
   sun.add(orbitLine);
 
-  return { orbit, planet };
+  return { orbit, planet, orbitLine };
 }
 
 // Crear planetas
@@ -180,16 +180,17 @@ camera.lookAt(0, 1, -30);
 const tl = gsap.timeline({
   scrollTrigger: {
     trigger: "body",   
-    start: "top top",    
+    start: "top -50px",    
     end: "+=4000",       
-    toggleActions: "play reverse play reverse",         
+    toggleActions: "play none none reverse",       
+    markers: true,  
   },
 });
 
 tl.to(camera.position, {
-  x: 30,
-  y: 1,
-  z: 15,
+  x: 42,
+  y: 4,
+  z: 14,
   duration: 2, // duración de la animación
   ease: "power2.out",
 });
@@ -197,6 +198,21 @@ tl.to(camera.position, {
 tl.to(separation,{
   value : 2,
   duration: 2,
+  ease: "power2.out"
+},"<");
+
+tl.to(textoInicio,{
+  x : -500,
+  duration: 1,
+  ease: "power1.inOut"
+
+
+},"<");
+
+tl.to(".overlay-2",{
+  x : 0,
+  y: -550,
+  duration: 2
 },"<");
 
 
@@ -230,6 +246,15 @@ function animate() {
   saturn.planet.position.x = 45 * separation.value;
   uranus.planet.position.x = 55 * separation.value;
   neptune.planet.position.x = 65 * separation.value;
+
+  mercury.orbitLine.scale.set(separation.value, separation.value, separation.value);
+  venus.orbitLine.scale.set(separation.value, separation.value, separation.value);
+  earth.orbitLine.scale.set(separation.value, separation.value, separation.value);
+  mars.orbitLine.scale.set(separation.value, separation.value, separation.value);
+  jupiter.orbitLine.scale.set(separation.value, separation.value, separation.value);
+  saturn.orbitLine.scale.set(separation.value, separation.value, separation.value);
+  uranus.orbitLine.scale.set(separation.value, separation.value, separation.value);
+  neptune.orbitLine.scale.set(separation.value, separation.value, separation.value);
 
 
   renderer.render(scene, camera);
