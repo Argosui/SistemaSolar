@@ -1,7 +1,14 @@
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as THREE from "three";
 
+gsap.registerPlugin(ScrollTrigger);
+
+const textoInicio = document.getElementById("overlay-container")
 const contenedor = document.getElementById("scene-container");
 const scene = new THREE.Scene();
+
+let separation = {value : 1};
 
 const camera = new THREE.PerspectiveCamera(
   75,
@@ -38,7 +45,7 @@ const sun = new THREE.Mesh(
   new THREE.SphereGeometry(6, 32, 32),
   new THREE.MeshBasicMaterial({
     map: textureLoader.load("/textures/sun.png"),
-  })
+  }),
 );
 sun.position.set(40, 1, 0);
 scene.add(sun);
@@ -50,7 +57,7 @@ scene.add(sunlight);
 
 scene.add(new THREE.AmbientLight(0xffffff, 0.05));
 
-// Función para crear órbitas visuales
+// orbitas
 function createOrbit(radius) {
   const segments = 64;
   const points = [];
@@ -72,7 +79,7 @@ function createOrbit(radius) {
   return new THREE.LineLoop(geometry, material);
 }
 
-// Función para crear planetas
+// Planetas
 function createPlanet({ size, texture, distance }) {
   const orbit = new THREE.Object3D();
   sun.add(orbit);
@@ -81,7 +88,7 @@ function createPlanet({ size, texture, distance }) {
     new THREE.SphereGeometry(size, 32, 32),
     new THREE.MeshStandardMaterial({
       map: textureLoader.load(`/textures/${texture}`),
-    })
+    }),
   );
 
   planet.position.x = distance;
@@ -97,49 +104,49 @@ function createPlanet({ size, texture, distance }) {
 const mercury = createPlanet({
   size: 0.5,
   texture: "mercury.png",
-  distance: 10,
+  distance: 10 * separation.value,
 });
 
 const venus = createPlanet({
   size: 1,
   texture: "venus.png",
-  distance: 15,
+  distance: 15 * separation.value,
 });
 
 const earth = createPlanet({
   size: 1,
   texture: "earth.png",
-  distance: 20,
+  distance: 20 * separation.value,
 });
 
 const mars = createPlanet({
   size: 0.6,
   texture: "mars.png",
-  distance: 25,
+  distance: 25 * separation.value,
 });
 
 const jupiter = createPlanet({
   size: 3,
   texture: "jupiter.png",
-  distance: 35,
+  distance: 35 * separation.value,
 });
 
 const saturn = createPlanet({
   size: 2.5,
   texture: "saturn.png",
-  distance: 45,
+  distance: 45 * separation.value,
 });
 
 const uranus = createPlanet({
   size: 1.8,
   texture: "uranus.jpg",
-  distance: 55,
+  distance: 55 * separation.value,
 });
 
 const neptune = createPlanet({
   size: 1.8,
   texture: "neptune.png",
-  distance: 65,
+  distance: 65 * separation.value,
 });
 
 // Anillo de Saturno
@@ -158,7 +165,7 @@ earth.planet.add(moonOrbit);
 
 const moon = new THREE.Mesh(
   new THREE.SphereGeometry(0.2, 8, 8),
-  new THREE.MeshStandardMaterial({ color: 0xffffff })
+  new THREE.MeshStandardMaterial({ color: 0xffffff }),
 );
 moon.position.x = 2;
 moonOrbit.add(moon);
@@ -166,6 +173,36 @@ moonOrbit.add(moon);
 // Cámara
 camera.position.set(-50, 20, 30);
 camera.lookAt(0, 1, -30);
+
+//GSAP
+
+
+const tl = gsap.timeline({
+  scrollTrigger: {
+    trigger: "body",   
+    start: "top top",    
+    end: "+=4000",       
+    toggleActions: "play reverse play reverse",         
+  },
+});
+
+tl.to(camera.position, {
+  x: 30,
+  y: 1,
+  z: 15,
+  duration: 2, // duración de la animación
+  ease: "power2.out",
+});
+
+tl.to(separation,{
+  value : 2,
+  duration: 2,
+},"<");
+
+
+
+
+ScrollTrigger.refresh();
 
 // Animación
 function animate() {
@@ -184,6 +221,16 @@ function animate() {
 
   earth.planet.rotation.y += 0.004;
   moonOrbit.rotation.y += 0.07;
+
+  mercury.planet.position.x = 10 * separation.value;
+  venus.planet.position.x = 15 * separation.value;
+  earth.planet.position.x = 20 * separation.value;
+  mars.planet.position.x = 25 * separation.value;
+  jupiter.planet.position.x = 35 * separation.value;
+  saturn.planet.position.x = 45 * separation.value;
+  uranus.planet.position.x = 55 * separation.value;
+  neptune.planet.position.x = 65 * separation.value;
+
 
   renderer.render(scene, camera);
 }
